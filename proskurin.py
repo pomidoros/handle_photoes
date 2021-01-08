@@ -1,9 +1,8 @@
 from settings import *
 from random import choice
 import math
-import os
 
-main_directory_path = "proskurin_photo"
+main_directory_path = PROSKURIN_DIRECTORY
 
 
 # чтение изображений из дирректории
