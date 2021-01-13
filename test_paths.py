@@ -44,3 +44,11 @@ def find_grey_photo():
         if new_add is not None:
             handled_list.extend(ORIGINAL_PATH + "/" + new_add)
     return handled_list
+
+
+# все пути к фотография Проскурина
+def proskurin_files(dir=PROSKURIN_DIRECTORY):
+    paths = []
+    for name in sorted(os.listdir(dir)):
+        paths.append(dir + "/" + name)
+    return paths

@@ -12,13 +12,15 @@ def advanced_handle(chnls):
     return img_as_ubyte(0.2126 * chnls[0] + 0.7152 * chnls[1] + 0.0722 * chnls[2])
 
 
-def from_color_to_grey(img, ver="adv"):
+def from_color_to_grey(path, ver="adv"):
+    img = imread(path)
     list_of_channels = make_channels(img)
     if ver == "lite":
         handled_image = lite_handle(list_of_channels)
     elif ver == "adv":
         handled_image = advanced_handle(list_of_channels)
-
+    else:
+        return None
     return handled_image
 
 
@@ -28,9 +30,7 @@ def convert(path=None, version="lite"):
         chosen_path = choice(paths)
     else:
         chosen_path = path
-
-    image = imread(chosen_path)
-    result_image = from_color_to_grey(image, version)
+    result_image = from_color_to_grey(chosen_path, version)
 
     return result_image
 
