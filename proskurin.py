@@ -1,16 +1,20 @@
 from settings import *
+from test_paths import PROSKURIN_DIRECTORY
 from random import choice
 import math
 
 main_directory_path = PROSKURIN_DIRECTORY
 
 
-# чтение изображений из дирректории
-def read_images(paths):
-    imgs = []
-    for path in paths:
-        imgs.append(imread(path))
-    return imgs
+def rand_proskurin_image():
+    all_paths = create_paths()
+    random_path = choose_random_image(all_paths)
+    return imread(random_path)
+
+
+# выбор рандомного изображения для теста
+def choose_random_image(paths):
+    return choice(paths)
 
 
 # вспомогательная функция для корректного получения путей
@@ -29,18 +33,6 @@ def rewrite_files_names():
         i += 1
 
 
-# выбор рандомного изображения для теста
-def choose_random_image(paths):
-    random_image = choice(paths)
-    return paths.index(random_image)
-
-
-# массив пикселей нужной фотографии
-def test_photo(imgs, paths):
-    ind = choose_random_image(paths)
-    return imgs[ind]
-
-
 # обрезание фотографии
 def cut_photo_frame(fr):
     percent = 0.1
@@ -54,13 +46,6 @@ def cut_frames(frs):
     for i in range(len(frs)):
         frs[i] = cut_photo_frame(frs[i])
     return frs
-
-
-# вывод изображения из наложения полученных кадров
-def print_imposition(frs):
-    result_image = img_as_ubyte(np.dstack((frs[2], frs[1], frs[0])))
-    imshow(result_image)
-    plt.show()
 
 
 # наложение слоёв
@@ -131,23 +116,8 @@ def current_photo_handle(ph):
     coords = imposition_coord(frames)
     # получаем смещённые кадры
     handled_frames = imposition(frames, coords)
-    # тестовый вывод готового кадра
-    print_imposition(handled_frames)
 
-    return coords
-
-
-# основная функция
-def main_handle_of_photos():
-    # пути к фото
-    paths_of_photos = create_paths()
-    # массив изображений
-    images = read_images(paths_of_photos)
-    # получаем рандомное изображение
-    cur_photo = test_photo(images, paths_of_photos)
-    # нужные смещения
-    result_coords = current_photo_handle(cur_photo)
-    return result_coords
+    return coords, img_as_ubyte(np.dstack((handled_frames[2], handled_frames[1], handled_frames[0])))
 
 
 # функция находит координаты во всех каналах, соответствующие координате из g-канала
@@ -164,7 +134,21 @@ def align(img, g_coord):
     return b, r
 
 
-# print(align("proskurin_photo/5.png", (508, 237)))
+# основная функция
+def main_handle_of_photos(path=None):
+    # если не передано изображение
+    if path is None:
+        # берём рандомное
+        cur_photo = rand_proskurin_image()
+    else:
+        cur_photo = imread(path)
+    # нужные смещения
+    result_photo, result_coords = current_photo_handle(cur_photo)
+    return result_coords, result_photo
+
 
 # тестирующая функция
-main_handle_of_photos()
+if __name__ == "__main__":
+    image, coords = main_handle_of_photos()
+    imshow(image)
+    plt.show()
